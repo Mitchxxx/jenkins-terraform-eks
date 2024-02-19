@@ -1,7 +1,7 @@
 resource "aws_vpc" "eks_vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
-  enable_dns_support = true
+  enable_dns_support   = true
 
   tags = {
     Name = "main-vpc"
@@ -9,54 +9,54 @@ resource "aws_vpc" "eks_vpc" {
 }
 
 resource "aws_internet_gateway" "eks_igw" {
-    vpc_id = aws_vpc.eks_vpc.id
+  vpc_id = aws_vpc.eks_vpc.id
 
-    tags = {
-      Name = "vpc_igw"
-    }
-  
+  tags = {
+    Name = "vpc_igw"
+  }
+
 }
 
-resource "aws_subnet" "eks_public_sub_one"{
-    vpc_id = aws_vpc.eks_vpc.id
-    cidr_block = "10.0.1.0/24"
-    availability_zone = "eu-west-1a"
-    map_public_ip_on_launch = true
+resource "aws_subnet" "eks_public_sub_one" {
+  vpc_id                  = aws_vpc.eks_vpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "eu-west-1a"
+  map_public_ip_on_launch = true
 
-    tags = {
-      Name = "Eks_Public_Subnet_one"
-    }
+  tags = {
+    Name = "Eks_Public_Subnet_one"
+  }
 }
 
 resource "aws_subnet" "eks_public_sub_two" {
-  vpc_id = aws_vpc.eks_vpc.id
-    cidr_block = "10.0.2.0/24"
-    availability_zone = "eu-west-1b"
-    map_public_ip_on_launch = true
+  vpc_id                  = aws_vpc.eks_vpc.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "eu-west-1b"
+  map_public_ip_on_launch = true
 
-    tags = {
-      Name = "Eks_Public_Subnet_two"
-    }
+  tags = {
+    Name = "Eks_Public_Subnet_two"
+  }
 }
 
 resource "aws_subnet" "eks_private_sub_one" {
-  vpc_id = aws_vpc.eks_vpc.id
-    cidr_block = "10.0.3.0/24"
-    availability_zone = "eu-west-1a"
+  vpc_id            = aws_vpc.eks_vpc.id
+  cidr_block        = "10.0.3.0/24"
+  availability_zone = "eu-west-1a"
 
-    tags = {
-      Name = "Eks_Private_Subnet_one"
-    }
+  tags = {
+    Name = "Eks_Private_Subnet_one"
+  }
 }
 
 resource "aws_subnet" "eks_private_sub_two" {
-  vpc_id = aws_vpc.eks_vpc.id
-    cidr_block = "10.0.4.0/24"
-    availability_zone = "eu-west-1b"
+  vpc_id            = aws_vpc.eks_vpc.id
+  cidr_block        = "10.0.4.0/24"
+  availability_zone = "eu-west-1b"
 
-    tags = {
-      Name = "Eks_Private_Subnet_two"
-    }
+  tags = {
+    Name = "Eks_Private_Subnet_two"
+  }
 }
 
 resource "aws_eip" "nat_eip" {
@@ -65,13 +65,13 @@ resource "aws_eip" "nat_eip" {
 
 resource "aws_nat_gateway" "eks_nat_gw" {
   allocation_id = aws_eip.nat_eip.id
-  subnet_id = aws_subnet.eks_public_sub_one
+  subnet_id     = aws_subnet.eks_public_sub_one.id
 
   tags = {
     Name = "Natty_GW"
   }
 
-  depends_on = [ aws_internet_gateway.eks_igw ]
+  depends_on = [aws_internet_gateway.eks_igw]
 }
 
 resource "aws_route_table" "private_subnets_route_table" {
@@ -91,34 +91,34 @@ resource "aws_route_table" "public_subnets_route_table" {
 }
 
 resource "aws_route" "public_subnet_nat_gw_route" {
-  route_table_id = aws_route_table.public_subnets_route_table.id
+  route_table_id         = aws_route_table.public_subnets_route_table.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id = aws_internet_gateway.eks_igw.id
+  gateway_id             = aws_internet_gateway.eks_igw.id
 }
 
 resource "aws_route" "private_subnet_nat_gw_route" {
-  route_table_id = aws_route_table.private_subnets_route_table.id
+  route_table_id         = aws_route_table.private_subnets_route_table.id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id = aws_nat_gateway.eks_nat_gw.id
+  nat_gateway_id         = aws_nat_gateway.eks_nat_gw.id
 }
 
 resource "aws_route_table_association" "public_subnet_route_table_association" {
-  subnet_id = aws_subnet.eks_public_sub_one.id
+  subnet_id      = aws_subnet.eks_public_sub_one.id
   route_table_id = aws_route_table.public_subnets_route_table.id
 }
 
 resource "aws_route_table_association" "public_subnet_route_table_association_2" {
-  subnet_id = aws_subnet.eks_public_sub_two.id
+  subnet_id      = aws_subnet.eks_public_sub_two.id
   route_table_id = aws_route_table.public_subnets_route_table.id
 }
 
 resource "aws_route_table_association" "private_subnet_route_table_association" {
-  subnet_id = aws_subnet.eks_private_sub_one.id
+  subnet_id      = aws_subnet.eks_private_sub_one.id
   route_table_id = aws_route_table.private_subnets_route_table.id
 }
 
 resource "aws_route_table_association" "private_subnet_route_table_association_2" {
-  subnet_id = aws_subnet.eks_private_sub_two.id
+  subnet_id      = aws_subnet.eks_private_sub_two.id
   route_table_id = aws_route_table.private_subnets_route_table.id
 }
 
@@ -142,22 +142,22 @@ resource "aws_iam_role" "eks_cluster_role" {
 
 # Attach the necessary policies to the IAM role
 
-resource "aws_iam_policy_attachment" "eks_cluster_role_attachment" {
+resource "aws_iam_role_policy_attachment" "eks_cluster_role_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  name = aws_iam_role.eks_cluster_role.name
+  role      = aws_iam_role.eks_cluster_role.name
 }
 
 # Create an EKS cluster
 
 resource "aws_eks_cluster" "mitchxx_cluster" {
-  name = "ibt-eks-cluster"
+  name     = "ibt-eks-cluster"
   role_arn = aws_iam_role.eks_cluster_role.arn
-  version = "1.26"
+  version  = "1.26"
 
   vpc_config {
-    subnet_ids = [ aws_subnet.eks_private_sub_one, aws_subnet.eks_private_sub_two, aws_subnet.eks_public_sub_one, aws_subnet.eks_public_sub_two]
+    subnet_ids = [aws_subnet.eks_private_sub_one.id, aws_subnet.eks_private_sub_two.id, aws_subnet.eks_public_sub_one.id, aws_subnet.eks_public_sub_two.id]
   }
-  depends_on = [ aws_iam_policy_attachment.eks_cluster_role_attachment ]
+  depends_on = [aws_iam_role_policy_attachment.eks_cluster_role_attachment]
 }
 
 
@@ -165,7 +165,7 @@ resource "aws_eks_cluster" "mitchxx_cluster" {
 
 resource "aws_iam_role" "eks_worker_node_role" {
   name = "eks_worker_node_role"
-  assume_role_policy = jsondecode({
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
@@ -181,35 +181,35 @@ resource "aws_iam_role" "eks_worker_node_role" {
 
 # Attach the necessary policies to the IAM role
 
-resource "aws_iam_policy_attachment" "eks_worker_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "eks_worker_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  name = aws_iam_role.eks_worker_node_role.name
+  role      = aws_iam_role.eks_worker_node_role.name
 }
 
-resource "aws_iam_policy_attachment" "eks_cni_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "eks_cni_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  name = aws_iam_role.eks_worker_node_role.name
+  role      = aws_iam_role.eks_worker_node_role.name
 }
 
-resource "aws_iam_policy_attachment" "eks_ec2CR_policy_attachment" {
+resource "aws_iam_role_policy_attachment" "eks_ec2CR_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  name = aws_iam_role.eks_worker_node_role.name
+  role     = aws_iam_role.eks_worker_node_role.name
 }
 
 # Create the EKS node group
 
 resource "aws_eks_node_group" "name" {
-  cluster_name = aws_eks_cluster.mitchxx_cluster.name
+  cluster_name    = aws_eks_cluster.mitchxx_cluster.name
   node_group_name = "eks_node"
-  node_role_arn = aws_iam_policy_attachment.eks_worker_policy_attachment.policy_arn
+  node_role_arn   = aws_iam_role_policy_attachment.eks_worker_policy_attachment.policy_arn
 
   # Subnet Configuration
-  subnet_ids = [aws_subnet.eks_private_sub_one, aws_subnet.eks_private_sub_two]
+  subnet_ids = [aws_subnet.eks_private_sub_one.id, aws_subnet.eks_private_sub_two.id]
 
   scaling_config {
     desired_size = 3
-    min_size = 2
-    max_size = 4
+    min_size     = 2
+    max_size     = 4
   }
 
   update_config {
@@ -218,7 +218,7 @@ resource "aws_eks_node_group" "name" {
 
   ami_type = "AL2_x86_64"
 
-# Configure the node group instances
+  # Configure the node group instances
   instance_types = ["t3.small", "t3.medium", "t3.large"]
 
   capacity_type = "ON_DEMAND"
@@ -228,7 +228,7 @@ resource "aws_eks_node_group" "name" {
   # Otherwise, EKS will not be able to properly delete EC2 Instances and Elastic Network Interfaces.
 
   depends_on = [
-    aws_iam_role_policy_attachment.eks_worker_node_policy_attachment,
+    aws_iam_role_policy_attachment.eks_worker_policy_attachment,
     aws_iam_role_policy_attachment.eks_cni_policy_attachment,
     aws_iam_role_policy_attachment.eks_ec2CR_policy_attachment,
   ]
