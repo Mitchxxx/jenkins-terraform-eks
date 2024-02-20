@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        AWS_ACCESS_KEY_ID = credentails('')
-        AWS_SECRET_ACCESS_KEY_ID = credentails('')
+        AWS_ACCESS_KEY_ID = credentails('mitchel_AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentails('mitchel_AWS_SECRET_ACCESS_KEY_ID')
         AWS_DEFAULT_REGION = 'eu-west-1'
 
     }
