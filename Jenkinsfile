@@ -36,7 +36,7 @@ pipeline {
                 expression { param.apply }
             }
             steps {
-                sh "aws eks update-kubeconfig --name eks cluster"
+                sh "aws eks update-kubeconfig --name ibt-eks-cluster"
                 sh "kubectl apply -f deployment.yml"
             }
 
