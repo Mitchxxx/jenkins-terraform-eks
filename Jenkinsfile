@@ -33,7 +33,7 @@ pipeline {
         }
         stage ('Deploy to Eks'){
             when {
-                expression { param.apply }
+                expression { params.apply }
             }
             steps {
                 sh "aws eks update-kubeconfig --name ibt-eks-cluster"
