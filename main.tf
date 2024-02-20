@@ -144,12 +144,12 @@ resource "aws_iam_role" "eks_cluster_role" {
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_role_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role      = aws_iam_role.eks_cluster_role.name
+  role       = aws_iam_role.eks_cluster_role.name
 }
 
 # Create an EKS cluster
 
-resource "aws_eks_cluster" "mitchxx_cluster" {
+resource "aws_eks_cluster" "mitchxxx_cluster" {
   name     = "ibt-eks-cluster"
   role_arn = aws_iam_role.eks_cluster_role.arn
   version  = "1.26"
@@ -183,25 +183,25 @@ resource "aws_iam_role" "eks_worker_node_role" {
 
 resource "aws_iam_role_policy_attachment" "eks_worker_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role      = aws_iam_role.eks_worker_node_role.name
+  role       = aws_iam_role.eks_worker_node_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "eks_cni_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role      = aws_iam_role.eks_worker_node_role.name
+  role       = aws_iam_role.eks_worker_node_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "eks_ec2CR_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role     = aws_iam_role.eks_worker_node_role.name
+  role       = aws_iam_role.eks_worker_node_role.name
 }
 
 # Create the EKS node group
 
 resource "aws_eks_node_group" "name" {
-  cluster_name    = aws_eks_cluster.mitchxx_cluster.name
+  cluster_name    = aws_eks_cluster.mitchxxx_cluster.name
   node_group_name = "eks_node"
-  node_role_arn   = aws_iam_role_policy_attachment.eks_worker_policy_attachment.policy_arn
+  node_role_arn   = aws_iam_role.eks_worker_node_role.arn
 
   # Subnet Configuration
   subnet_ids = [aws_subnet.eks_private_sub_one.id, aws_subnet.eks_private_sub_two.id]
@@ -230,7 +230,7 @@ resource "aws_eks_node_group" "name" {
   depends_on = [
     aws_iam_role_policy_attachment.eks_worker_policy_attachment,
     aws_iam_role_policy_attachment.eks_cni_policy_attachment,
-    aws_iam_role_policy_attachment.eks_ec2CR_policy_attachment,
+    aws_iam_role_policy_attachment.eks_ec2CR_policy_attachment
   ]
 }
 
