@@ -52,7 +52,7 @@ pipeline {
                     if(params.action == 'apply'){
                         sh "aws eks update-kubeconfig --name ibt-eks-cluster"
                         sh "kubectl apply -f deployment.yml"
-                }
+                    }
                 }
             }
         }
